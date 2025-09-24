@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+{% block title %}Home - GIDEON{% endblock %}
+{% block content %}
+<section class="hero container flex-center-col">
+  <h1>Personalized Fitness, Powered by AI</h1>
+  <p>Transform your fitness journey with custom workouts and nutrition plans designed for you.</p>
+  <button class="cta-btn" onclick="document.getElementById('registerModal').style.display='block'">Get Started</button>
+</section>
+
+<section id="planner" class="container flex-center-col">
+  <h2>AI Workout Planner</h2>
+  <form id="workoutForm" aria-label="AI Workout Planner">
+    <label>Fitness Goal
+      <select name="goal" required>
+        <option value="">Select goal</option>
+        <option>Weight Loss</option>
+        <option>Muscle Gain</option>
+        <option>Endurance</option>
+      </select>
+    </label>
+    <label>Experience Level
+      <select name="level" required>
+        <option value="">Select level</option>
+        <option>Beginner</option>
+        <option>Intermediate</option>
+        <option>Advanced</option>
+      </select>
+    </label>
+    <label>Preferred Workout Days
+      <input type="number" name="days" min="1" max="7" required aria-required="true"/>
+    </label>
+    <button type="submit">Generate Plan</button>
+  </form>
+  <div id="workoutResult" class="result"></div>
+</section>
+
+<section id="nutrition" class="container flex-center-col">
+  <h2>Nutrition Optimizer</h2>
+  <form id="nutritionForm" aria-label="Nutrition Optimizer">
+    <label>Diet Preference
+      <select name="diet" required>
+        <option value="">Select preference</option>
+        <option>Vegetarian</option>
+        <option>Vegan</option>
+        <option>Keto</option>
+        <option>No Preference</option>
+      </select>
+    </label>
+    <label>Daily Calorie Target
+      <input type="number" name="calories" min="1000" max="5000" required aria-required="true"/>
+    </label>
+    <button type="submit">Personalize Nutrition</button>
+  </form>
+  <div id="nutritionResult" class="result"></div>
+</section>
+
+<section id="blog" class="container">
+  <h2>Tips & Insights</h2>
+  <div class="grid">
+    <article>
+      <h3>How AI Revolutionizes Fitness</h3>
+      <p>Discover the advantages of using AI to tailor your workouts and accelerate progress.</p>
+    </article>
+    <article>
+      <h3>Nutrition Myths Debunked</h3>
+      <p>Explore science-backed nutrition strategies for optimal results.</p>
+    </article>
+    <article>
+      <h3>Consistency Is Key</h3>
+      <p>Learn proven tactics to stay motivated and consistent with your fitness journey.</p>
+    </article>
+  </div>
+</section>
+
+<section id="testimonials" class="container">
+  <h2>User Stories</h2>
+  <div class="testimonials">
+    <blockquote>
+      "The AI workout planner helped me target my goals and stay on track. Highly recommended!"
+      <footer>- Alex, 28</footer>
+    </blockquote>
+    <blockquote>
+      "I love how the nutrition optimizer suggests healthy meals within my calorie range." 
+      <footer>- Priya, 34</footer>
+    </blockquote>
+  </div>
+</section>
+
+<section id="contact" class="container flex-center-col">
+  <h2>Contact Us</h2>
+  <form id="contactForm" aria-label="Contact Form">
+    <label>Name
+      <input type="text" name="name" required aria-required="true"/>
+    </label>
+    <label>Email
+      <input type="email" name="email" required aria-required="true"/>
+    </label>
+    <label>Message
+      <textarea name="message" rows="4" required aria-required="true"></textarea>
+    </label>
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+<!-- Registration Modal -->
+<div id="registerModal" class="modal" tabindex="-1">
+  <div class="modal-content">
+    <span onclick="document.getElementById('registerModal').style.display='none'" class="close">&times;</span>
+    <h2>Create Account</h2>
+    <form id="registerForm" aria-label="Registration Form">
+      <label>Name
+        <input type="text" name="name" required aria-required="true"/>
+      </label>
+      <label>Email
+        <input type="email" name="email" required aria-required="true"/>
+      </label>
+      <label>Password
+        <input type="password" name="password" required aria-required="true" minlength="6"/>
+      </label>
+      <button type="submit">Register</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

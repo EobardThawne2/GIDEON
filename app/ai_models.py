@@ -1,0 +1,264 @@
+import tensorflow as tf
+import numpy as np
+import os
+import json
+
+class WorkoutModel:
+    def __init__(self, model_path):
+        self.model_path = model_path
+        self.model = None
+        self.load_model()
+        
+        # Feature mappings
+        self.goals = ['Weight Loss', 'Muscle Gain', 'Endurance']
+        self.levels = ['Beginner', 'Intermediate', 'Advanced']
+        
+    def load_model(self):
+        if os.path.exists(self.model_path):
+            self.model = tf.keras.models.load_model(self.model_path)
+        else:
+            self.create_model()
+            
+    def create_model(self):
+        # Create input layer explicitly
+        inputs = tf.keras.Input(shape=(7,))  # 3 goals + 3 levels + 1 days value
+        
+        # Build model using functional API
+        x = tf.keras.layers.Dense(64, activation='relu')(inputs)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        x = tf.keras.layers.Dense(32, activation='relu')(x)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        x = tf.keras.layers.Dense(16, activation='relu')(x)
+        outputs = tf.keras.layers.Dense(8, activation='softmax')(x)
+        
+        # Create model
+        model = tf.keras.Model(inputs=inputs, outputs=outputs, name='workout_model')
+        
+        model.compile(optimizer='adam',
+                     loss='categorical_crossentropy',
+                     metrics=['accuracy'])
+        
+        self.model = model
+        self.save_model()
+        
+    def save_model(self):
+        os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
+        try:
+            self.model.save(self.model_path, save_format='keras')
+        except Exception as e:
+            print(f"Error saving workout model: {str(e)}")
+            raise
+        
+    def preprocess_input(self, goal, level, days):
+        try:
+            # One-hot encode goal and level
+            goal_vector = tf.keras.utils.to_categorical(
+                self.goals.index(goal), num_classes=len(self.goals))
+            level_vector = tf.keras.utils.to_categorical(
+                self.levels.index(level), num_classes=len(self.levels))
+            
+            # Normalize days
+            days_normalized = np.array([days / 7.0])
+            
+            # Combine features
+            features = np.concatenate([goal_vector, level_vector, days_normalized])
+            return np.array([features])
+        except ValueError as e:
+            raise ValueError(f"Invalid input: goal must be one of {self.goals}, level must be one of {self.levels}, days must be between 1 and 7. Error: {str(e)}")
+        
+    def generate_plan(self, goal, level, days):
+        input_data = self.preprocess_input(goal, level, days)
+        prediction = self.model.predict(input_data)
+        
+        # Convert prediction to workout plan
+        return self.create_workout_plan(goal, level, days, prediction[0])
+        
+    def create_workout_plan(self, goal, level, days, prediction):
+        # Map prediction to exercise types and intensities
+        exercise_types = {
+            'Weight Loss': ['HIIT', 'Cardio', 'Circuit Training'],
+            'Muscle Gain': ['Strength Training', 'Resistance', 'Compound Exercises'],
+            'Endurance': ['Running', 'Swimming', 'Cycling']
+        }
+        
+        intensity = {
+            'Beginner': {'sets': '2-3', 'reps': '10-12', 'rest': '90 sec'},
+            'Intermediate': {'sets': '3-4', 'reps': '8-10', 'rest': '60 sec'},
+            'Advanced': {'sets': '4-5', 'reps': '6-8', 'rest': '45 sec'}
+        }
+        
+        exercises = exercise_types[goal]
+        specs = intensity[level]
+        
+        # Generate structured workout plan
+        plan = {
+            'weekly_schedule': [],
+            'intensity': specs,
+            'notes': f"Plan optimized for {goal} with {level} intensity"
+        }
+        
+        for day in range(days):
+            workout = {
+                'day': day + 1,
+                'focus': np.random.choice(exercises),
+                'duration': '45-60 minutes',
+                'exercises': self._generate_exercises(goal, level)
+            }
+            plan['weekly_schedule'].append(workout)
+            
+        return json.dumps(plan, indent=2)
+        
+    def _generate_exercises(self, goal, level):
+        # Example exercise database - extend this based on your needs
+        exercise_db = {
+            'Weight Loss': {
+                'Beginner': ['Bodyweight Squats', 'Push-ups', 'Walking Lunges'],
+                'Intermediate': ['Jump Squats', 'Burpees', 'Mountain Climbers'],
+                'Advanced': ['Box Jumps', 'Sprints', 'Kettlebell Swings']
+            },
+            'Muscle Gain': {
+                'Beginner': ['Dumbbell Rows', 'Bench Press', 'Leg Press'],
+                'Intermediate': ['Barbell Rows', 'Incline Press', 'Deadlifts'],
+                'Advanced': ['Power Cleans', 'Military Press', 'Romanian Deadlifts']
+            },
+            'Endurance': {
+                'Beginner': ['Treadmill Walk', 'Stationary Bike', 'Elliptical'],
+                'Intermediate': ['Jogging', 'Swimming', 'Rowing'],
+                'Advanced': ['Trail Running', 'HIIT Sprints', 'CrossFit WODs']
+            }
+        }
+        
+        exercises = exercise_db[goal][level]
+        return np.random.choice(exercises, size=3, replace=False).tolist()
+
+class NutritionModel:
+    def __init__(self, model_path):
+        self.model_path = model_path
+        self.model = None
+        self.load_model()
+        
+        # Feature mappings
+        self.diet_types = ['Vegetarian', 'Vegan', 'Keto', 'No Preference']
+        
+    def load_model(self):
+        if os.path.exists(self.model_path):
+            self.model = tf.keras.models.load_model(self.model_path)
+        else:
+            self.create_model()
+            
+    def create_model(self):
+        # Create input layer explicitly
+        inputs = tf.keras.Input(shape=(5,))  # 4 diet types + 1 calories value
+        
+        # Build model using functional API
+        x = tf.keras.layers.Dense(32, activation='relu')(inputs)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        x = tf.keras.layers.Dense(16, activation='relu')(x)
+        outputs = tf.keras.layers.Dense(8, activation='softmax')(x)
+        
+        # Create model
+        model = tf.keras.Model(inputs=inputs, outputs=outputs, name='nutrition_model')
+        
+        model.compile(optimizer='adam',
+                     loss='categorical_crossentropy',
+                     metrics=['accuracy'])
+        
+        self.model = model
+        self.save_model()
+        
+    def save_model(self):
+        os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
+        try:
+            self.model.save(self.model_path, save_format='keras')
+        except Exception as e:
+            print(f"Error saving nutrition model: {str(e)}")
+            raise
+        
+    def preprocess_input(self, diet_type, calories):
+        try:
+            # One-hot encode diet type
+            diet_vector = tf.keras.utils.to_categorical(
+                self.diet_types.index(diet_type), num_classes=len(self.diet_types))
+            
+            # Normalize calories
+            calories_normalized = np.array([calories / 5000.0])
+            
+            # Combine features
+            features = np.concatenate([diet_vector, calories_normalized])
+            return np.array([features])
+        except ValueError as e:
+            raise ValueError(f"Invalid input: diet_type must be one of {self.diet_types}, calories must be between 1000 and 5000. Error: {str(e)}")
+        
+    def generate_plan(self, diet_type, calories):
+        input_data = self.preprocess_input(diet_type, calories)
+        prediction = self.model.predict(input_data)
+        
+        return self.create_nutrition_plan(diet_type, calories, prediction[0])
+        
+    def create_nutrition_plan(self, diet_type, calories, prediction):
+        # Calculate macronutrient ratios based on diet type
+        macro_ratios = {
+            'Vegetarian': {'protein': 0.25, 'carbs': 0.5, 'fats': 0.25},
+            'Vegan': {'protein': 0.2, 'carbs': 0.55, 'fats': 0.25},
+            'Keto': {'protein': 0.3, 'carbs': 0.05, 'fats': 0.65},
+            'No Preference': {'protein': 0.3, 'carbs': 0.45, 'fats': 0.25}
+        }
+        
+        ratios = macro_ratios[diet_type]
+        
+        # Calculate grams of each macro
+        protein_cals = calories * ratios['protein']
+        carb_cals = calories * ratios['carbs']
+        fat_cals = calories * ratios['fats']
+        
+        plan = {
+            'daily_calories': calories,
+            'macronutrients': {
+                'protein': f"{int(protein_cals/4)}g ({int(protein_cals)} calories)",
+                'carbohydrates': f"{int(carb_cals/4)}g ({int(carb_cals)} calories)",
+                'fats': f"{int(fat_cals/9)}g ({int(fat_cals)} calories)"
+            },
+            'meal_plan': self._generate_meals(diet_type, calories),
+            'notes': f"Plan optimized for {diet_type} diet at {calories} calories"
+        }
+        
+        return json.dumps(plan, indent=2)
+        
+    def _generate_meals(self, diet_type, calories):
+        # Example meal database - extend this based on your needs
+        meal_db = {
+            'Vegetarian': {
+                'breakfast': ['Oatmeal with fruits', 'Veggie omelette', 'Smoothie bowl'],
+                'lunch': ['Quinoa bowl', 'Greek salad', 'Veggie wrap'],
+                'dinner': ['Stir-fried tofu', 'Lentil curry', 'Veggie pasta'],
+                'snacks': ['Nuts and seeds', 'Protein shake', 'Greek yogurt']
+            },
+            'Vegan': {
+                'breakfast': ['Chia pudding', 'Tofu scramble', 'Overnight oats'],
+                'lunch': ['Buddha bowl', 'Chickpea salad', 'Tempeh wrap'],
+                'dinner': ['Beyond burger', 'Vegetable curry', 'Seitan stir-fry'],
+                'snacks': ['Trail mix', 'Protein smoothie', 'Energy balls']
+            },
+            'Keto': {
+                'breakfast': ['Bacon and eggs', 'Keto coffee', 'Avocado toast'],
+                'lunch': ['Chicken salad', 'Tuna lettuce wraps', 'Keto bowl'],
+                'dinner': ['Salmon and veggies', 'Steak and asparagus', 'Keto pizza'],
+                'snacks': ['Cheese cubes', 'Pork rinds', 'Keto fat bombs']
+            },
+            'No Preference': {
+                'breakfast': ['Protein pancakes', 'Egg sandwich', 'Greek yogurt parfait'],
+                'lunch': ['Chicken rice bowl', 'Turkey wrap', 'Protein salad'],
+                'dinner': ['Grilled salmon', 'Lean steak', 'Chicken breast'],
+                'snacks': ['Protein bar', 'Mixed nuts', 'Fruit and cheese']
+            }
+        }
+        
+        meals = meal_db[diet_type]
+        daily_plan = {
+            'breakfast': np.random.choice(meals['breakfast']),
+            'lunch': np.random.choice(meals['lunch']),
+            'dinner': np.random.choice(meals['dinner']),
+            'snacks': np.random.choice(meals['snacks'], size=2, replace=False).tolist()
+        }
+        
+        return daily_plan
