@@ -1,0 +1,40 @@
+PROJECT GIDEON/
+├── app/
+│   ├── __init__.py           # Flask application initialization
+│   ├── api.py               # Vercel serverless entry point
+│   ├── models.py            # Database models
+│   ├── ai_models.py         # TensorFlow AI models
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css   # Main stylesheet
+│   │   ├── js/
+│   │   │   └── main.js      # Main JavaScript file
+│   │   └── images/
+│   │       └── logo.png     # Site logo
+│   └── templates/
+│       ├── layout.html      # Base template
+│       └── index.html       # Homepage template
+├── models/                  # AI model storage
+│   ├── workout_model.keras  # Saved workout model
+│   └── nutrition_model.keras # Saved nutrition model
+├── config.py               # Application configuration
+├── requirements.txt        # Python dependencies
+├── runtime.txt            # Python version for Vercel
+├── vercel.json           # Vercel deployment config
+├── .gitignore           # Git ignore rules
+└── run.py               # Local development server
+│
+├── app/
+│   ├── __init__.py             # Flask app factory + all routes (main, auth, api)
+│   ├── static/
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   └── templates/
+│       ├── index.html
+│       └── layout.html
+│
+├── config.py
+├── run.py
+├── requirements.txt
+└── README.md

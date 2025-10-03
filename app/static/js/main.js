@@ -23,8 +23,34 @@ function closeModal() {
   }, 250);
 }
 
-// Open modal from CTA
-document.querySelector('.cta-btn')?.addEventListener('click', openModal);
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  });
+});
+
+// Open modal from CTA and Get Started buttons
+function setupInitialEventListeners() {
+  // Only set up if user is not logged in
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    document.querySelectorAll('.cta-btn, #loginBtn').forEach(btn => {
+      btn.addEventListener('click', openModal);
+    });
+  }
+}
+
+// Call setup function
+setupInitialEventListeners();
+
 // Close modal on Escape or close button
 document.addEventListener('keydown', e => {
   if (e.key === "Escape" && registerModal?.style.display === 'block') closeModal();
@@ -50,9 +76,19 @@ registerModal?.addEventListener('keydown', e => {
 // Helper function for POST JSON with error handling
 async function postJSON(url, data) {
   try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Add authorization header if token exists
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify(data)
     });
     if (!response.ok) throw new Error('Network error');
@@ -122,6 +158,16 @@ document.getElementById('workoutForm')?.addEventListener('submit', async e => {
     
     // Parse the JSON string if it's a string
     const plan = typeof res.plan === 'string' ? JSON.parse(res.plan) : res.plan;
+    
+    // Save to history
+    saveWorkoutToHistory({
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      goal: data.goal,
+      level: data.level,
+      days: parseInt(data.days),
+      plan: JSON.stringify(plan)
+    });
     
     // Format the plan nicely
     const formattedPlan = formatWorkoutPlan(plan);
@@ -206,6 +252,15 @@ document.getElementById('nutritionForm')?.addEventListener('submit', async e => 
     // Parse the JSON string if it's a string
     const plan = typeof res.plan === 'string' ? JSON.parse(res.plan) : res.plan;
     
+    // Save to history
+    saveNutritionToHistory({
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      diet: data.diet,
+      calories: data.calories,
+      plan: JSON.stringify(plan)
+    });
+    
     // Format the plan nicely
     const formattedPlan = formatNutritionPlan(plan);
     
@@ -246,16 +301,305 @@ document.getElementById('nutritionForm')?.addEventListener('submit', async e => 
 document.getElementById('registerForm')?.addEventListener('submit', async e => {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
-  setLoading(btn, true, 'Registering...');
-  const data = Object.fromEntries(new FormData(e.target));
-  const res = await postJSON('/auth/register', data);
-  setLoading(btn, false);
-  if (res.error) {
-    alert("Registration failed: " + res.error);
-  } else {
-    alert(res.message || "Registration successful!");
-    closeModal();
-    e.target.reset();
+  setLoading(btn, true, 'Creating Account...');
+  
+  try {
+    const data = Object.fromEntries(new FormData(e.target));
+    const res = await postJSON('/auth/register', data);
+    
+    if (res.error) {
+      // Show error message in the form
+      showFormMessage(e.target, res.error, 'error');
+    } else {
+      // Store the access token
+      localStorage.setItem('access_token', res.access_token);
+      localStorage.setItem('user_name', data.name);
+      
+      // Show success message
+      showFormMessage(e.target, res.message || "Account created successfully!", 'success');
+      
+      // Update UI to logged-in state
+      updateUIForLoggedInUser(data.name);
+      
+      // Close modal after short delay
+      setTimeout(() => {
+        closeModal();
+        e.target.reset();
+        
+        // Show welcome message
+        showWelcomeMessage(data.name);
+      }, 1500);
+    }
+  } catch (error) {
+    showFormMessage(e.target, 'Registration failed. Please try again.', 'error');
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+// Function to show form messages
+function showFormMessage(form, message, type) {
+  // Remove existing message
+  const existingMessage = form.querySelector('.form-message');
+  if (existingMessage) {
+    existingMessage.remove();
+  }
+  
+  // Create new message
+  const messageEl = document.createElement('div');
+  messageEl.className = `form-message ${type}`;
+  messageEl.innerHTML = `
+    <span class="message-icon">${type === 'error' ? '⚠️' : '✅'}</span>
+    <span>${message}</span>
+  `;
+  
+  // Insert message before submit button
+  const submitBtn = form.querySelector('button[type="submit"]');
+  form.insertBefore(messageEl, submitBtn);
+}
+
+// Function to update UI for logged-in user
+function updateUIForLoggedInUser(userName) {
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) {
+    loginBtn.innerHTML = `Welcome, ${userName}`;
+    // Remove any existing event listeners
+    loginBtn.onclick = null;
+    loginBtn.removeEventListener('click', openModal);
+    // Add new event listener
+    loginBtn.addEventListener('click', showUserMenu);
+  }
+  
+  // Update hero CTA button
+  const heroCtaBtn = document.querySelector('.hero .cta-btn');
+  if (heroCtaBtn) {
+    heroCtaBtn.innerHTML = 'Go to Dashboard';
+    // Remove any existing event listeners
+    heroCtaBtn.onclick = null;
+    heroCtaBtn.removeEventListener('click', openModal);
+    // Add new event listener
+    heroCtaBtn.addEventListener('click', showDashboard);
+  }
+  
+  // Update secondary button if it exists
+  const secondaryBtn = document.querySelector('.hero .secondary-btn');
+  if (secondaryBtn) {
+    secondaryBtn.innerHTML = 'View Plans';
+    secondaryBtn.onclick = null;
+    secondaryBtn.addEventListener('click', () => {
+      document.getElementById('planner').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+}
+
+// Function to show welcome message
+function showWelcomeMessage(userName) {
+  const welcomeEl = document.createElement('div');
+  welcomeEl.className = 'welcome-toast';
+  welcomeEl.innerHTML = `
+    <div class="welcome-content">
+      <span class="welcome-icon">🎉</span>
+      <div>
+        <h4>Welcome to GIDEON, ${userName}!</h4>
+        <p>Your AI-powered fitness journey starts now.</p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(welcomeEl);
+  
+  // Show toast
+  setTimeout(() => welcomeEl.classList.add('show'), 100);
+  
+  // Hide toast after 4 seconds
+  setTimeout(() => {
+    welcomeEl.classList.remove('show');
+    setTimeout(() => welcomeEl.remove(), 300);
+  }, 4000);
+}
+
+// Function to show user menu (placeholder)
+function showUserMenu() {
+  const userMenu = document.createElement('div');
+  userMenu.className = 'user-menu-dropdown';
+  userMenu.innerHTML = `
+    <div class="user-menu-content">
+      <div class="user-menu-item" onclick="showDashboard()">
+        <span>📊</span> Dashboard
+      </div>
+      <div class="user-menu-item" onclick="showProfile()">
+        <span>👤</span> Profile
+      </div>
+      <div class="user-menu-item" onclick="showHistory()">
+        <span>📈</span> History
+      </div>
+      <div class="user-menu-divider"></div>
+      <div class="user-menu-item logout" onclick="logout()">
+        <span>🚪</span> Logout
+      </div>
+    </div>
+  `;
+  
+  // Position menu
+  const loginBtn = document.getElementById('loginBtn');
+  const rect = loginBtn.getBoundingClientRect();
+  userMenu.style.position = 'fixed';
+  userMenu.style.top = (rect.bottom + 5) + 'px';
+  userMenu.style.right = '20px';
+  
+  document.body.appendChild(userMenu);
+  
+  // Close menu when clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', function closeMenu(e) {
+      if (!userMenu.contains(e.target)) {
+        userMenu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    });
+  }, 10);
+}
+
+// Function to logout
+function logout() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('user_name');
+  
+  // Reset UI to logged-out state
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) {
+    loginBtn.innerHTML = 'Get Started';
+    // Remove logged-in event listeners
+    loginBtn.onclick = null;
+    loginBtn.removeEventListener('click', showUserMenu);
+    // Add back the original event listener
+    loginBtn.addEventListener('click', openModal);
+  }
+  
+  // Reset hero CTA button
+  const heroCtaBtn = document.querySelector('.hero .cta-btn');
+  if (heroCtaBtn) {
+    heroCtaBtn.innerHTML = 'Get Started Free';
+    // Remove dashboard event listeners
+    heroCtaBtn.onclick = null;
+    heroCtaBtn.removeEventListener('click', showDashboard);
+    // Add back the original event listener
+    heroCtaBtn.addEventListener('click', openModal);
+  }
+  
+  // Reset secondary button
+  const secondaryBtn = document.querySelector('.hero .secondary-btn');
+  if (secondaryBtn) {
+    secondaryBtn.innerHTML = 'Try AI Planner';
+    secondaryBtn.onclick = null;
+    secondaryBtn.addEventListener('click', () => {
+      document.getElementById('planner').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+  
+  // Remove any user menu
+  const userMenu = document.querySelector('.user-menu-dropdown');
+  if (userMenu) userMenu.remove();
+  
+  // Show logout message
+  showLogoutMessage();
+}
+
+// Function to show logout message
+function showLogoutMessage() {
+  const logoutEl = document.createElement('div');
+  logoutEl.className = 'welcome-toast';
+  logoutEl.innerHTML = `
+    <div class="welcome-content">
+      <span class="welcome-icon">👋</span>
+      <div>
+        <h4>Logged out successfully</h4>
+        <p>Thanks for using GIDEON. Come back anytime!</p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(logoutEl);
+  
+  // Show toast
+  setTimeout(() => logoutEl.classList.add('show'), 100);
+  
+  // Hide toast after 3 seconds
+  setTimeout(() => {
+    logoutEl.classList.remove('show');
+    setTimeout(() => logoutEl.remove(), 300);
+  }, 3000);
+}
+
+// Placeholder functions for menu items
+function showProfile() {
+    window.location.href = '/profile';
+}
+
+function showHistory() {
+    window.location.href = '/history';
+}
+
+// Function to show dashboard (placeholder)
+function showDashboard() {
+  // Create dashboard modal
+  const dashboardModal = document.createElement('div');
+  dashboardModal.className = 'modal';
+  dashboardModal.style.display = 'block';
+  dashboardModal.innerHTML = `
+    <div class="modal-content" style="max-width: 800px;">
+      <span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+      <h2 style="text-align: center; margin-bottom: 2rem; color: #0f172a;">
+        🎯 Your AI Fitness Dashboard
+      </h2>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div class="feature-card">
+          <div class="feature-icon">🏋️</div>
+          <h3>Workout Plans</h3>
+          <p>Create and manage your personalized workout routines</p>
+          <button onclick="document.getElementById('planner').scrollIntoView(); this.parentElement.parentElement.parentElement.parentElement.remove();" style="margin-top: 1rem;">
+            Create Workout Plan
+          </button>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🍎</div>
+          <h3>Nutrition Plans</h3>
+          <p>Get AI-optimized meal plans for your dietary goals</p>
+          <button onclick="document.getElementById('nutrition').scrollIntoView(); this.parentElement.parentElement.parentElement.parentElement.remove();" style="margin-top: 1rem;">
+            Create Nutrition Plan
+          </button>
+        </div>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; text-align: center;">
+        <h4 style="color: #3b82f6; margin-bottom: 1rem;">🚀 Coming Soon</h4>
+        <p style="color: #64748b; margin: 0;">
+          Progress tracking, workout history, nutrition analytics, and personalized recommendations
+          are coming in future updates!
+        </p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(dashboardModal);
+  
+  // Close modal when clicking outside
+  dashboardModal.addEventListener('click', (e) => {
+    if (e.target === dashboardModal) {
+      dashboardModal.remove();
+    }
+  });
+}
+
+// Check if user is already logged in on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const token = localStorage.getItem('access_token');
+  const userName = localStorage.getItem('user_name');
+  
+  if (token && userName) {
+    updateUIForLoggedInUser(userName);
   }
 });
 
@@ -592,4 +936,35 @@ style.textContent = `
   border-radius: 6px;
 }
 `;
+/* Line 929 omitted */
 document.head.appendChild(style);
+
+// Functions to save plans to history
+function saveWorkoutToHistory(workoutData) {
+  const workoutHistory = JSON.parse(localStorage.getItem('workout_history') || '[]');
+  workoutHistory.unshift(workoutData);
+  
+  // Keep only last 50 entries
+  if (workoutHistory.length > 50) {
+    workoutHistory.splice(50);
+  }
+  
+  localStorage.setItem('workout_history', JSON.stringify(workoutHistory));
+}
+
+function saveNutritionToHistory(nutritionData) {
+  const nutritionHistory = JSON.parse(localStorage.getItem('nutrition_history') || '[]');
+  nutritionHistory.unshift(nutritionData);
+  
+  // Keep only last 50 entries
+  if (nutritionHistory.length > 50) {
+    nutritionHistory.splice(50);
+  }
+  
+  localStorage.setItem('nutrition_history', JSON.stringify(nutritionHistory));
+}
+
+// Set member since date if not already set
+if (!localStorage.getItem('member_since')) {
+  localStorage.setItem('member_since', new Date().getFullYear().toString());
+}

@@ -32,6 +32,16 @@ def create_app():
     def index():
         return render_template('index.html')
 
+    # Profile page
+    @app.route('/profile')
+    def profile():
+        return render_template('profile.html')
+
+    # History page
+    @app.route('/history')
+    def history():
+        return render_template('history.html')
+
     # Auth routes
     @app.route('/auth/register', methods=['POST'])
     def register():

@@ -1,104 +1,290 @@
 {% extends "layout.html" %}
-{% block title %}Home - GIDEON{% endblock %}
+{% block title %}GIDEON - AI-Powered Fitness Revolution{% endblock %}
 {% block content %}
-<section class="hero container flex-center-col">
-  <h1>Personalized Fitness, Powered by AI</h1>
-  <p>Transform your fitness journey with custom workouts and nutrition plans designed for you.</p>
-  <button class="cta-btn" onclick="document.getElementById('registerModal').style.display='block'">Get Started</button>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>AI-Powered Fitness, <span class="highlight">Made Personal</span></h1>
+        <p>Transform your fitness journey with intelligent workout plans and nutrition optimization designed specifically for your goals, experience level, and lifestyle.</p>
+        <div class="hero-buttons">
+          <button class="cta-btn" onclick="document.getElementById('registerModal').style.display='block'">Get Started Free</button>
+          <button class="secondary-btn" onclick="document.getElementById('planner').scrollIntoView()">Try AI Planner</button>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AI Fitness Technology" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 2rem; border-radius: 20px;">
+      </div>
+    </div>
+  </div>
 </section>
 
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>95%</h3>
+        <p>Goal Achievement Rate</p>
+      </div>
+      <div class="stat-item">
+        <h3>24/7</h3>
+        <p>AI-Powered Support</p>
+      </div>
+      <div class="stat-item">
+        <h3>10K+</h3>
+        <p>Success Stories</p>
+      </div>
+      <div class="stat-item">
+        <h3>50%</h3>
+        <p>Faster Results</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Key Features Section -->
+<section id="features" class="container">
+  <div class="section-header">
+    <h2>Key Features</h2>
+    <p>Advanced AI technology designed to accelerate your fitness journey and deliver personalized results.</p>
+  </div>
+  
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Smart Goal Targeting</h3>
+      <p>AI analyzes your fitness goals and creates personalized workout plans that adapt to your progress and preferences.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Progress Monitoring</h3>
+      <p>Track your performance metrics and receive real-time insights to optimize your training effectiveness.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🍎</div>
+      <h3>Nutrition Integration</h3>
+      <p>Seamlessly integrated nutrition plans that complement your workout routine for maximum results.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>Mobile-First Design</h3>
+      <p>Access your personalized fitness plans anywhere with our responsive, mobile-optimized platform.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Instant Plan Generation</h3>
+      <p>Get your customized workout and nutrition plans generated instantly using advanced AI algorithms.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Secure & Private</h3>
+      <p>Your personal data and fitness information are protected with enterprise-grade security measures.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="container">
+  <div class="section-header">
+    <h2>How It Works</h2>
+    <p>A simple four-step process to transform your fitness journey with AI-powered personalization.</p>
+  </div>
+  
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h3>Set Your Goals</h3>
+      <p>Tell us about your fitness objectives, experience level, and preferences to get started.</p>
+    </div>
+    
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h3>AI Analysis</h3>
+      <p>Our advanced AI algorithms analyze your profile and generate personalized workout and nutrition plans.</p>
+    </div>
+    
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h3>Get Your Plan</h3>
+      <p>Receive your customized fitness plan with detailed exercises, nutrition guidelines, and schedules.</p>
+    </div>
+    
+    <div class="step-card">
+      <div class="step-number">4</div>
+      <h3>Track Progress</h3>
+      <p>Monitor your achievements and let AI adapt your plan for continuous improvement and results.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AI Workout Planner Section -->
 <section id="planner" class="container flex-center-col">
-  <h2>AI Workout Planner</h2>
+  <div class="section-header">
+    <h2>AI Workout Planner</h2>
+    <p>Get your personalized workout plan generated by advanced AI in seconds.</p>
+  </div>
+  
   <form id="workoutForm" aria-label="AI Workout Planner">
-    <label>Fitness Goal
+    <div class="form-group">
+      <label>Fitness Goal</label>
       <select name="goal" required>
-        <option value="">Select goal</option>
+        <option value="">Select your primary goal</option>
         <option>Weight Loss</option>
         <option>Muscle Gain</option>
         <option>Endurance</option>
       </select>
-    </label>
-    <label>Experience Level
+    </div>
+    
+    <div class="form-group">
+      <label>Experience Level</label>
       <select name="level" required>
-        <option value="">Select level</option>
+        <option value="">Select your fitness level</option>
         <option>Beginner</option>
         <option>Intermediate</option>
         <option>Advanced</option>
       </select>
-    </label>
-    <label>Preferred Workout Days
-      <input type="number" name="days" min="1" max="7" required aria-required="true"/>
-    </label>
-    <button type="submit">Generate Plan</button>
+    </div>
+    
+    <div class="form-group">
+      <label>Preferred Workout Days</label>
+      <input type="number" name="days" min="1" max="7" placeholder="How many days per week?" required aria-required="true"/>
+    </div>
+    
+    <button type="submit">Generate AI Workout Plan</button>
   </form>
   <div id="workoutResult" class="result"></div>
 </section>
 
+<!-- Nutrition Optimizer Section -->
 <section id="nutrition" class="container flex-center-col">
-  <h2>Nutrition Optimizer</h2>
+  <div class="section-header">
+    <h2>Nutrition Optimizer</h2>
+    <p>Let AI create the perfect nutrition plan tailored to your dietary preferences and calorie goals.</p>
+  </div>
+  
   <form id="nutritionForm" aria-label="Nutrition Optimizer">
-    <label>Diet Preference
+    <div class="form-group">
+      <label>Diet Preference</label>
       <select name="diet" required>
-        <option value="">Select preference</option>
+        <option value="">Select your diet preference</option>
         <option>Vegetarian</option>
         <option>Vegan</option>
         <option>Keto</option>
         <option>No Preference</option>
       </select>
-    </label>
-    <label>Daily Calorie Target
-      <input type="number" name="calories" min="1000" max="5000" required aria-required="true"/>
-    </label>
-    <button type="submit">Personalize Nutrition</button>
+    </div>
+    
+    <div class="form-group">
+      <label>Daily Calorie Target</label>
+      <input type="number" name="calories" min="1000" max="5000" placeholder="Enter your daily calorie goal" required aria-required="true"/>
+    </div>
+    
+    <button type="submit">Generate Nutrition Plan</button>
   </form>
   <div id="nutritionResult" class="result"></div>
 </section>
 
-<section id="blog" class="container">
-  <h2>Tips & Insights</h2>
-  <div class="grid">
-    <article>
-      <h3>How AI Revolutionizes Fitness</h3>
-      <p>Discover the advantages of using AI to tailor your workouts and accelerate progress.</p>
-    </article>
-    <article>
-      <h3>Nutrition Myths Debunked</h3>
-      <p>Explore science-backed nutrition strategies for optimal results.</p>
-    </article>
-    <article>
-      <h3>Consistency Is Key</h3>
-      <p>Learn proven tactics to stay motivated and consistent with your fitness journey.</p>
-    </article>
-  </div>
-</section>
-
+<!-- Real Stories Section -->
 <section id="testimonials" class="container">
-  <h2>User Stories</h2>
+  <div class="section-header">
+    <h2>Real Stories, Real Results</h2>
+    <p>Success stories from fitness enthusiasts who transformed their lives with GIDEON's AI-powered approach.</p>
+  </div>
+  
   <div class="testimonials">
-    <blockquote>
-      "The AI workout planner helped me target my goals and stay on track. Highly recommended!"
-      <footer>- Alex, 28</footer>
-    </blockquote>
-    <blockquote>
-      "I love how the nutrition optimizer suggests healthy meals within my calorie range." 
-      <footer>- Priya, 34</footer>
-    </blockquote>
+    <div class="testimonial-card">
+      <blockquote>
+        "The AI workout planner completely transformed my approach to fitness. I achieved my weight loss goals 3 months faster than expected!"
+        <footer>— Alex Rodriguez, Software Engineer</footer>
+      </blockquote>
+    </div>
+    
+    <div class="testimonial-card">
+      <blockquote>
+        "I love how the nutrition optimizer creates meal plans that actually fit my busy lifestyle. The personalization is incredible."
+        <footer>— Priya Patel, Marketing Manager</footer>
+      </blockquote>
+    </div>
+    
+    <div class="testimonial-card">
+      <blockquote>
+        "As a beginner, I was lost in the gym. GIDEON's AI gave me the confidence and structure I needed to start my fitness journey."
+        <footer>— Marcus Johnson, Student</footer>
+      </blockquote>
+    </div>
   </div>
 </section>
 
+<!-- Team Section -->
+<section id="team" class="container">
+  <div class="section-header">
+    <h2>Meet Our Team</h2>
+    <p>Passionate innovators dedicated to revolutionizing fitness through artificial intelligence and personalized wellness.</p>
+  </div>
+  
+  <div class="team-grid">
+    <div class="team-member">
+      <div class="team-avatar">👨‍💻</div>
+      <h3>Dr. Sarah Chen</h3>
+      <div class="role">AI Research Lead</div>
+      <p>Expert in machine learning algorithms and fitness data analysis with 10+ years of experience.</p>
+    </div>
+    
+    <div class="team-member">
+      <div class="team-avatar">💻</div>
+      <h3>Mike Thompson</h3>
+      <div class="role">Full-Stack Developer</div>
+      <p>Building scalable and user-friendly interfaces that make AI fitness accessible to everyone.</p>
+    </div>
+    
+    <div class="team-member">
+      <div class="team-avatar">🏋️</div>
+      <h3>Jessica Martinez</h3>
+      <div class="role">Fitness Specialist</div>
+      <p>Certified trainer ensuring our AI recommendations align with proven fitness methodologies.</p>
+    </div>
+    
+    <div class="team-member">
+      <div class="team-avatar">🥗</div>
+      <h3>David Kim</h3>
+      <div class="role">Nutrition Expert</div>
+      <p>Registered dietitian developing AI-powered nutrition strategies for optimal health outcomes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
 <section id="contact" class="container flex-center-col">
-  <h2>Contact Us</h2>
+  <div class="section-header">
+    <h2>Contact Us</h2>
+    <p>Ready to start your AI-powered fitness journey? Get in touch with our team.</p>
+  </div>
+  
   <form id="contactForm" aria-label="Contact Form">
-    <label>Name
-      <input type="text" name="name" required aria-required="true"/>
-    </label>
-    <label>Email
-      <input type="email" name="email" required aria-required="true"/>
-    </label>
-    <label>Message
-      <textarea name="message" rows="4" required aria-required="true"></textarea>
-    </label>
-    <button type="submit">Send</button>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" name="name" placeholder="Enter your full name" required aria-required="true"/>
+    </div>
+    
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" name="email" placeholder="Enter your email address" required aria-required="true"/>
+    </div>
+    
+    <div class="form-group">
+      <label>Message</label>
+      <textarea name="message" rows="4" placeholder="Tell us how we can help you..." required aria-required="true"></textarea>
+    </div>
+    
+    <button type="submit">Send Message</button>
   </form>
 </section>
 
@@ -106,18 +292,30 @@
 <div id="registerModal" class="modal" tabindex="-1">
   <div class="modal-content">
     <span onclick="document.getElementById('registerModal').style.display='none'" class="close">&times;</span>
-    <h2>Create Account</h2>
+    <h2 style="text-align: center; margin-bottom: 1.5rem; color: #0f172a;">Create Your Account</h2>
+    <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">Join thousands of users achieving their fitness goals with AI</p>
+    
     <form id="registerForm" aria-label="Registration Form">
-      <label>Name
-        <input type="text" name="name" required aria-required="true"/>
-      </label>
-      <label>Email
-        <input type="email" name="email" required aria-required="true"/>
-      </label>
-      <label>Password
-        <input type="password" name="password" required aria-required="true" minlength="6"/>
-      </label>
-      <button type="submit">Register</button>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Enter your full name" required aria-required="true"/>
+      </div>
+      
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="Enter your email" required aria-required="true"/>
+      </div>
+      
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Create a secure password" required aria-required="true" minlength="6"/>
+      </div>
+      
+      <button type="submit">Create Account</button>
+      
+      <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 0.9rem;">
+        By creating an account, you agree to our Terms of Service and Privacy Policy.
+      </p>
     </form>
   </div>
 </div>

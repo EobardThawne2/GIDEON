@@ -1,0 +1,207 @@
+{% extends "layout.html" %}
+{% block title %}Profile - GIDEON{% endblock %}
+{% block content %}
+
+<!-- Profile Header -->
+<section class="profile-header">
+  <div class="container">
+    <div class="profile-header-content">
+      <div class="profile-avatar">
+        <div class="avatar-circle">
+          <span class="avatar-initial" id="avatarInitial">U</span>
+        </div>
+        <button class="avatar-upload-btn">📷 Change Photo</button>
+      </div>
+      <div class="profile-info">
+        <h1 id="profileName">Loading...</h1>
+        <p id="profileEmail">Loading...</p>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-number" id="totalWorkouts">0</span>
+            <span class="stat-label">Workouts Created</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="totalNutritionPlans">0</span>
+            <span class="stat-label">Nutrition Plans</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="memberSince">2025</span>
+            <span class="stat-label">Member Since</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Profile Settings -->
+<section class="profile-settings container">
+  <div class="settings-grid">
+    <!-- Personal Information -->
+    <div class="settings-card">
+      <h2>Personal Information</h2>
+      <form id="personalInfoForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="userName" placeholder="Enter your full name" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="userEmail" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="userPhone" placeholder="Enter your phone number">
+        </div>
+        
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="userBirthdate">
+        </div>
+        
+        <button type="submit">Update Personal Info</button>
+      </form>
+    </div>
+
+    <!-- Fitness Profile -->
+    <div class="settings-card">
+      <h2>Fitness Profile</h2>
+      <form id="fitnessProfileForm">
+        <div class="form-group">
+          <label>Height (cm)</label>
+          <input type="number" id="userHeight" placeholder="Enter your height" min="100" max="250">
+        </div>
+        
+        <div class="form-group">
+          <label>Weight (kg)</label>
+          <input type="number" id="userWeight" placeholder="Enter your weight" min="30" max="300">
+        </div>
+        
+        <div class="form-group">
+          <label>Fitness Level</label>
+          <select id="userFitnessLevel">
+            <option value="">Select your level</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Primary Fitness Goal</label>
+          <select id="userFitnessGoal">
+            <option value="">Select your goal</option>
+            <option value="Weight Loss">Weight Loss</option>
+            <option value="Muscle Gain">Muscle Gain</option>
+            <option value="Endurance">Endurance</option>
+            <option value="General Fitness">General Fitness</option>
+          </select>
+        </div>
+        
+        <button type="submit">Update Fitness Profile</button>
+      </form>
+    </div>
+
+    <!-- Preferences -->
+    <div class="settings-card">
+      <h2>Preferences</h2>
+      <form id="preferencesForm">
+        <div class="form-group">
+          <label>Preferred Diet Type</label>
+          <select id="userDietType">
+            <option value="">Select diet preference</option>
+            <option value="No Preference">No Preference</option>
+            <option value="Vegetarian">Vegetarian</option>
+            <option value="Vegan">Vegan</option>
+            <option value="Keto">Keto</option>
+            <option value="Paleo">Paleo</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Workout Days Per Week</label>
+          <input type="number" id="userWorkoutDays" min="1" max="7" placeholder="Preferred workout days">
+        </div>
+        
+        <div class="form-group">
+          <label>Notifications</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="notifyWorkouts"> Workout Reminders
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="notifyNutrition"> Nutrition Tips
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="notifyProgress"> Progress Updates
+            </label>
+          </div>
+        </div>
+        
+        <button type="submit">Update Preferences</button>
+      </form>
+    </div>
+
+    <!-- Account Security -->
+    <div class="settings-card">
+      <h2>Account Security</h2>
+      <form id="securityForm">
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" id="currentPassword" placeholder="Enter current password">
+        </div>
+        
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" id="newPassword" placeholder="Enter new password" minlength="6">
+        </div>
+        
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm new password" minlength="6">
+        </div>
+        
+        <button type="submit">Change Password</button>
+      </form>
+      
+      <div class="security-actions">
+        <button class="secondary-btn" onclick="exportData()">📥 Export My Data</button>
+        <button class="danger-btn" onclick="deleteAccount()">🗑️ Delete Account</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="quick-actions container">
+  <h2>Quick Actions</h2>
+  <div class="actions-grid">
+    <div class="action-card" onclick="goToWorkoutPlanner()">
+      <div class="action-icon">🏋️</div>
+      <h3>Create Workout Plan</h3>
+      <p>Generate a new AI-powered workout routine</p>
+    </div>
+    
+    <div class="action-card" onclick="goToNutritionPlanner()">
+      <div class="action-icon">🍎</div>
+      <h3>Create Nutrition Plan</h3>
+      <p>Get personalized meal recommendations</p>
+    </div>
+    
+    <div class="action-card" onclick="goToHistory()">
+      <div class="action-icon">📊</div>
+      <h3>View History</h3>
+      <p>See your past plans and progress</p>
+    </div>
+    
+    <div class="action-card" onclick="goToDashboard()">
+      <div class="action-icon">📈</div>
+      <h3>Dashboard</h3>
+      <p>Overview of your fitness journey</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
