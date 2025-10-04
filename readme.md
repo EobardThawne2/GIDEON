@@ -376,7 +376,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <table>
   <tr>
     <td align="center">
-      <img src="https://media.licdn.com/dms/image/v2/D4D03AQGBamQzQz-uGw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1728029568142?e=1733961600&v=beta&t=aBU5_NfWzCOKqQg6VRHoSu3qGfFMDrNnHHQO7SG8Wjc" width="100px;" alt="Sumeer Khattar"/>
+      <img src="https://media.licdn.com/dms/image/v2/D4D35AQEAs5JaBf4qQQ/profile-framedphoto-shrink_200_200/B4DZmQgJkNIEAY-/0/1759065971259?e=1760187600&v=beta&t=7lGJc3Oa_mw2jYPPheSTwCqN1A3aCFBQ4an7-N1DzTQ" width="100px;" alt="Sumeer Khattar"/>
       <br />
       <sub><b>Sumeer Khattar</b></sub>
       <br />
@@ -415,3 +415,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Made with ❤️ by Sumeer Khattar
 
 </div>
+
