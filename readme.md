@@ -14,7 +14,7 @@
 
 *Transform your fitness journey with AI-powered personalized workout plans and nutrition optimization designed specifically for your goals, experience level, and lifestyle.*
 
-[🚀 Live Demo](https://gideon-ai-fitness.vercel.app) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/your-username/gideon/issues) • [✨ Request Feature](https://github.com/your-username/gideon/issues)
+[🚀 Live Demo](https://gideon-kr4u.onrender.com/) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/your-username/gideon/issues) • [✨ Request Feature](https://github.com/your-username/gideon/issues)
 
 </div>
 
@@ -139,7 +139,6 @@ GIDEON/
 ├── 📄 run.py                  # Application entry point
 ├── 📄 requirements.txt        # Python dependencies
 ├── 📄 runtime.txt             # Python version for deployment
-├── 📄 vercel.json             # Vercel deployment config
 └── 📄 README.md               # Project documentation
 ```
 
@@ -263,17 +262,31 @@ tests/
 
 ## 🚀 Deployment
 
-### Vercel Deployment
+### Render Deployment
 
-1. **Install Vercel CLI**
-   ```bash
-   npm i -g vercel
+1. **Connect your GitHub repository to Render**
+   - Visit [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" and select "Web Service"
+   - Connect your GitHub repository
+
+2. **Configure deployment settings**
+   ```
+   Build Command: pip install -r requirements.txt
+   Start Command: python run.py
+   Environment: Python 3
    ```
 
-2. **Deploy**
-   ```bash
-   vercel --prod
+3. **Set environment variables**
    ```
+   SECRET_KEY=your-production-secret-key
+   JWT_SECRET_KEY=your-production-jwt-key
+   FLASK_ENV=production
+   ```
+
+4. **Deploy**
+   - Click "Create Web Service"
+   - Render will automatically deploy your application
+   - Your app will be available at `https://your-app-name.onrender.com`
 
 ### Docker Deployment
 
@@ -363,28 +376,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <table>
   <tr>
     <td align="center">
-      <img src="https://github.com/username1.png" width="100px;" alt=""/>
+      <img src="https://media.licdn.com/dms/image/v2/D4D03AQGBamQzQz-uGw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1728029568142?e=1733961600&v=beta&t=aBU5_NfWzCOKqQg6VRHoSu3qGfFMDrNnHHQO7SG8Wjc" width="100px;" alt="Sumeer Khattar"/>
       <br />
-      <sub><b>Dr. Sarah Chen</b></sub>
+      <sub><b>Sumeer Khattar</b></sub>
       <br />
-      <a href="mailto:sarah@gideon-ai.com">📧</a>
-      <a href="https://linkedin.com/in/sarahchen">💼</a>
-    </td>
-    <td align="center">
-      <img src="https://github.com/username2.png" width="100px;" alt=""/>
+      <sub><i>Founder & CEO</i></sub>
       <br />
-      <sub><b>Mike Thompson</b></sub>
-      <br />
-      <a href="mailto:mike@gideon-ai.com">📧</a>
-      <a href="https://linkedin.com/in/mikethompson">💼</a>
-    </td>
-    <td align="center">
-      <img src="https://github.com/username3.png" width="100px;" alt=""/>
-      <br />
-      <sub><b>Jessica Martinez</b></sub>
-      <br />
-      <a href="mailto:jessica@gideon-ai.com">📧</a>
-      <a href="https://linkedin.com/in/jessicamartinez">💼</a>
+      <a href="mailto:sumeerkhattar@gmail.com">📧</a>
+      <a href="https://www.linkedin.com/in/sumeer-khattar">💼</a>
     </td>
   </tr>
 </table>
@@ -413,6 +412,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **[⬆ Back to Top](#-gideon---ai-powered-fitness-revolution)**
 
-Made with ❤️ by the GIDEON Team
+Made with ❤️ by Sumeer Khattar
 
 </div>
